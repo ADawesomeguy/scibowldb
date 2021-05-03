@@ -36,31 +36,19 @@ def make_public(question, html=False):
     return new_question
 
 
-@api.route('/questions', methods=['GET'])
-def get_questions():
-    questions = filter_questions().all()
-    return jsonify({'questions': [make_public(q) for q in questions]})
-
-
 # Filter for questions with certain attributes using post requests
-@api.route('/questions', methods=['POST'])
+@api.route('/questions', methods=['GET'])
 def get_questions_filtered():
-    if not request.json: abort(400)
-    sources, categories = request.json.get('sources'), request.json.get('categories')
+    if not request.args: abort(400)
+    sources, categories = request.args.get('sources'), request.args.get('categories')
     questions = filter_questions(sources, categories).all()
     return jsonify({'questions': [make_public(q) for q in questions]})
 
 
 @api.route('/questions/random', methods=['GET'])
-def get_random_question():
-    question = filter_questions().order_by(func.random()).first()
-    return jsonify({'question': make_public(question)})
-
-
-@api.route('/questions/random', methods=['POST'])
 def get_random_question_filtered():
-    if not request.json: abort(400)
-    sources, categories = request.json.get('sources'), request.json.get('categories')
+    if not request.args: abort(400)
+    sources, categories = request.args.get('sources'), request.args.get('categories')
     question = filter_questions(sources, categories).order_by(func.random()).first()
     return jsonify({'question': make_public(question)})
 
